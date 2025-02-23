@@ -50,7 +50,7 @@ describe('Teste de conversão de lead', () => {
         cy.get('input[placeholder="Nome"]').type(nomeAleatorio);
         cy.get('input[placeholder="E-mail"]').type(fakeEmail);
         cy.get('input[placeholder="Telefone/Whatsapp"]').type(randomNumber);
-        //cy.get('input[name="cpf"]').first().type(cpfAleatorio);
+        cy.get('input[name="cpf"]').first().type(cpfAleatorio);
         
         
         cy.get(':nth-child(6) > :nth-child(2) > .choices > .choices__inner > .choices__list').click();
