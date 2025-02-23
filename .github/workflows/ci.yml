@@ -1,10 +1,34 @@
 name: End-to-end tests
 on: push
+
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
+      - name: Checkout código
         uses: actions/checkout@v4
-      - name: Cypress run
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar Cypress
+        run: npx cypress install
+
+      - name: Rodar Cypress no modo headless
         uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          headless: true
+          record: false
+          start: "npm start"
+
+      - name: Upload de screenshots em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Instalar dependências extras do Ubuntu
+        run: sudo apt-get update && sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+    

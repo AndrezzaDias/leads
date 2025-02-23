@@ -52,30 +52,23 @@ describe('Teste de conversão de lead', () => {
         cy.get('input[placeholder="Telefone/Whatsapp"]').type(randomNumber);
         cy.get('input[name="cpf"]').first().type(cpfAleatorio);
         
-        
+
         cy.get(':nth-child(6) > :nth-child(2) > .choices > .choices__inner > .choices__list').click();
         cy.get('div[data-value="escritorio-autoforce-natal"]').first().click();
         cy.wait(1000);
         cy.get('input[type="checkbox"]').check({ force: true }); 
         
-
         // Enviar o formulário
         cy.get('.form-conversion__body > .btn').click();
 
-        
-
-
         cy.wait(1000)
         cy.wait(1000)
-
 
         // Aguardar a requisição e validar o status
         cy.wait('@leadRequest', { timeout: 10000 }).then((interception) => {
             expect(interception.response.statusCode).to.eq(200) // Verifica se a resposta foi bem-sucedida (status 200)
             cy.log('Lead enviado com sucesso!') // Log para confirmar o sucesso
         })
-        
-       
-        
+           
     })
 })
