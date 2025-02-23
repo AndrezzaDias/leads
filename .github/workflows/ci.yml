@@ -1,34 +1,48 @@
-name: End-to-end tests
-on: push
+name: Cypress End-to-End Tests
+
+on:
+  push:
+    branches:
+      - main  # Executa os testes ao fazer push na branch main
+  pull_request:
+    branches:
+      - main  # Executa os testes em PRs para a branch main
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04  # Define o sistema operacional do runner
+
     steps:
-      - name: Checkout código
+      - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Atualizado para Node.js 18, mais estável
+
       - name: Instalar dependências
-        run: npm ci
+        run: npm ci  # Usa `npm ci` para instalação mais rápida e confiável
 
-      - name: Instalar Cypress
-        run: npx cypress install
+      - name: Definir permissões para pastas
+        run: sudo chown -R $USER:$USER ~/.cache/Cypress
 
-      - name: Rodar Cypress no modo headless
+      - name: Executar testes Cypress
         uses: cypress-io/github-action@v6
         with:
-          browser: chrome
-          headless: true
-          record: false
-          start: "npm start"
+          browser: chrome  # Usa o Chrome ao invés do Electron
+          headless: true   # Executa os testes sem interface gráfica
+          config: viewportWidth=1920 viewportHeight=1080 video=true  # Garante resolução correta
+          record: false  # Defina como 'true' se quiser registrar no Cypress Dashboard
+        env:
+          CYPRESS_BASE_URL: "https://testes.autoforce.com.br/dealer-bmw-desafio"
+          CYPRESS_API_URL: "https://api.autoboxoffice.app/v1/"
 
-      - name: Upload de screenshots em caso de falha
+      - name: Upload de vídeos e screenshots em caso de falha
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Atualizando para a versão v4
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-
-      - name: Instalar dependências extras do Ubuntu
-        run: sudo apt-get update && sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
-    
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
